@@ -3,7 +3,11 @@ package xyz.grantlmul.xbfl;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -45,7 +49,7 @@ public class App {
 
     public static Thread thread;
     public static JsonObject authConf;
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         thread = Thread.currentThread();
         authConf = JsonParser.parseString(
                         new String(
@@ -59,5 +63,12 @@ public class App {
         bob.append("&scope=XboxLive.signin%20offline_access");
         OAUTH_URL = new URL(bob.toString());
         System.out.println("Course set to " + OAUTH_URL);
+        mainFrame = new JFrame();
+        mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        mainFrame.setSize(884, 541);
+    mainFrame.add(
+        new BackgroundPanel("/dirt.png", new GridLayout()));
+        mainFrame.setVisible(true);
     }
+    public static JFrame mainFrame;
 }

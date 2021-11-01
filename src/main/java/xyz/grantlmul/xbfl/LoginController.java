@@ -2,34 +2,18 @@ package xyz.grantlmul.xbfl;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
-import javafx.scene.input.MouseEvent;
-import javafx.stage.Window;
-import javafx.stage.WindowEvent;
 import org.apache.commons.io.IOUtils;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
-import org.eclipse.jetty.io.Connection;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.AbstractHandler;
-import org.eclipse.jetty.util.MultiMap;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
 import javax.net.ssl.HttpsURLConnection;
-import java.awt.*;
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.http.HttpClient;
@@ -38,22 +22,6 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 
 public class LoginController {
-
-    @FXML TextField usernameField;
-    @FXML PasswordField passwordField;
-    @FXML Button msButton;
-
-    public void initialize(Window window) {
-        window.addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, this::exitApplication);
-    }
-
-    public void handleRegisterClick(MouseEvent mouseEvent) {
-
-    }
-
-    public void handleLoginClick(MouseEvent mouseEvent) {
-    }
-
     private class ServerRunnable implements Runnable {
         Server server;
         @Override
@@ -121,9 +89,7 @@ public class LoginController {
                         {
                             JsonObject r = jsonRequest("", "{\"Properties\": {\"SandboxId\": \"RETAIL\",\"UserTokens\": [\""+xbl_token+"\" // from above]},\"RelyingParty\": \"rp://api.minecraftservices.com/\",\"TokenType\": \"JWT\"}", "POST");
                             if (r.has("Err")) {
-                                Alert alert = new Alert(Alert.AlertType.ERROR);
-                                alert.setContentText(r.get("Message").getAsString());
-                                alert.show();
+                                App.showError("Error signing in to Xbox:\n" + r.get("Message").getAsString());
                                 try {
                                     die();
                                 } catch (Exception e) {
@@ -150,18 +116,12 @@ public class LoginController {
                             String responseBody = IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8);
                             JsonObject responseJson = JsonParser.parseString(responseBody).getAsJsonObject();
                             if (responseJson.get("items").getAsJsonArray().size() < 2) {
-                                Alert alert = new Alert(Alert.AlertType.ERROR);
-                                alert.setContentText("This Microsoft account does not have a Minecraft: Java Edition account connected to it.");
-                                alert.show();
+                                App.showError("This Microsoft account does not have a Minecraft: Java Edition account connected to it.");
                                 try {
                                     die();
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
-                                runningServer = false;
-                                msButton.setText("Microsoft Log In");
-                                listenerThread.stop();
-                                return;
                             }
                         }
 
@@ -180,17 +140,13 @@ public class LoginController {
                         File dataFile = new File(App.dataDir(), "accountdata.json");
                         IOUtils.write(accountData.toString(), new FileWriter(dataFile));
                         System.out.println("gaming as " + accountData.get("name").getAsString());
-                        Alert good = new Alert(Alert.AlertType.INFORMATION);
-                        good.setContentText("Signed in as user " + accountData.get("name").getAsString() + "successfully!");
-                        good.show();
+                        App.showInfo("Signed in as user " + accountData.get("name").getAsString() + "successfully!");
 
                         try {
                             die();
                         } catch (Exception e) {
                             e.printStackTrace();
-                            Alert alert = new Alert(Alert.AlertType.ERROR);
-                            alert.setContentText("I tried killing myself, but I just won't die!");
-                            alert.show();
+                            App.showError("I tried killing myself, but I just won't die!");
                         }
                     }
                     baseRequest.setHandled(true);
@@ -200,44 +156,11 @@ public class LoginController {
                 server.start();
             } catch (Exception e) {
                 e.printStackTrace();
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setContentText("Something fucked up while trying to set things up for logging in.");
-                alert.show();
+                App.showError("Something fucked up while trying to set things up for logging in.");
             }
         }
         public void die() throws Exception {
             server.stop();
-        }
-    }
-    ServerRunnable runner = new ServerRunnable();
-    Thread listenerThread;
-    boolean runningServer = false;
-
-    @FXML
-    public void exitApplication(WindowEvent event) {
-        if (runningServer) {
-            try {
-                runner.die();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            listenerThread.stop();
-            msButton.setText("Microsoft Log In");
-        }
-    }
-
-    public void handleMicrosoftClick(MouseEvent mouseEvent) throws Exception {
-        listenerThread = new Thread(runner);
-        if (runningServer) {
-            runningServer = false;
-            runner.die();
-            listenerThread.stop();
-            msButton.setText("Microsoft Log In");
-        } else {
-            Desktop.getDesktop().browse(App.OAUTH_URL.toURI());
-            runningServer = true;
-            listenerThread.start();
-            msButton.setText("Cancel Microsoft Login");
         }
     }
 

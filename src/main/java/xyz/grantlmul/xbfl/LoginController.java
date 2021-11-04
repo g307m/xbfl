@@ -16,7 +16,18 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
 import org.apache.commons.io.IOUtils;
+import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.HttpHost;
+import org.apache.hc.core5.http.HttpResponse;
+import org.apache.hc.core5.http.NameValuePair;
+import org.apache.hc.core5.http.message.BasicClassicHttpResponse;
+import org.apache.hc.core5.http.message.BasicNameValuePair;
 import org.eclipse.jetty.io.Connection;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
@@ -32,10 +43,9 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LoginController {
 
@@ -84,24 +94,18 @@ public class LoginController {
                         // ms auth
                         String ms_access_token;
                         {
-                            HttpClient httpClient = HttpClient.newHttpClient();
+                            CloseableHttpClient httpClient = HttpClients.createDefault();
                             HttpPost httpPost = new HttpPost("https://login.live.com/oauth20_token.srf");
-                            String body = "client_id=" + App.authConf.get("client_id").getAsString() +
-                                    "&client_secret=" + App.authConf.get("client_secret").getAsString() +
-                                    "&code=" + code +
-                                    "&grant_type=authorization_code" +
-                                    "&redirect_uri=" + App.REDIRECT_URI;
-                            HttpRequest httpRequest = HttpRequest
-                                    .newBuilder(URI.create(""))
-                                    .POST(HttpRequest.BodyPublishers.ofString(body)).build();
-                            HttpResponse re = null;
-                            try {
-                                re = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                                response.sendError(500, e.toString());
-                            }
-                            JsonObject responseJson = JsonParser.parseString((String) re.body()).getAsJsonObject();
+                            List<NameValuePair> params = new ArrayList<NameValuePair>();
+                            params.add(new BasicNameValuePair("client_id", App.authConf.get("client_id").getAsString()));
+                            //params.add(new BasicNameValuePair("client_secret", App.authConf.get("client_secret").getAsString()));
+                            params.add(new BasicNameValuePair("code", code));
+                            params.add(new BasicNameValuePair("grant_type", "authorization_code"));
+                            params.add(new BasicNameValuePair("redirect_uri", App.REDIRECT_URI));
+                            httpPost.setEntity(new UrlEncodedFormEntity(params));
+                            CloseableHttpResponse re = httpClient.execute(httpPost);
+                            JsonObject responseJson = JsonParser.parseString(new String(re.getEntity().getContent().readAllBytes())).getAsJsonObject();
+                            System.out.println(responseJson);
                             ms_access_token = responseJson.get("access_token").getAsString();
                         }
                         // xbox auth

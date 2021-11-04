@@ -19,7 +19,7 @@ import java.nio.file.Path;
  */
 public class App extends Application {
 
-    public static final String REDIRECT_URI = "http%3A%2F%2Flocalhost%3A54321%2Fauth";
+    public static final String REDIRECT_URI = "http://localhost:54321/auth";
     public static final String REGISTER_URL = "https://sisu.xboxlive.com/connect/XboxLive/?state=signup&signup=1&cobrandId=8058f65d-ce06-4c30-9559-473c9275a65d&&tid=896928775&ru=https://www.minecraft.net/en-us/login?return_url=/en-us/profile&aid=1142970254";
     public static URL OAUTH_URL;
 
@@ -60,26 +60,6 @@ public class App extends Application {
             dataDir.mkdir();
         }
         return dataDir;
-    }
-
-    public static void openBrowser(String url) {
-        String osName = (System.getProperty("os.name")).toUpperCase();
-        Runtime rt = Runtime.getRuntime();
-        try {
-            if (osName.contains("WIN"))
-            {
-                Process proc = rt.exec("cmd.exe /c start \"" + url.replaceAll("&", "^&") + "\"");
-                System.out.println(proc.info().arguments());
-            }
-            else if (osName.contains("MAC"))
-            {
-                rt.exec("open " + url);
-            } else {
-                rt.exec("x-www-browser " + url);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     public static Thread thread;

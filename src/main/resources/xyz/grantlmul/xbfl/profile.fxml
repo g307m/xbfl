@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.collections.FXCollections?>
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="xyz.grantlmul.xbfl.ProfileController"
+            prefHeight="400.0" prefWidth="600.0">
+    <children>
+        <VBox>
+            <TitledPane text="Profile Info" VBox.vgrow="ALWAYS" maxWidth="Infinity" collapsible="false">
+                <GridPane>
+                    <Label GridPane.columnIndex="0" GridPane.rowIndex="0">Profile Name:</Label>
+                    <TextField GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.columnSpan="3">Profile Name</TextField>
+                    <CheckBox GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                    <Label GridPane.columnIndex="1" GridPane.rowIndex="1" >Game Directory: </Label>
+                    <TextField disable="true" />
+                    <HBox>
+                        <CheckBox />
+                        <Label>Resolution:</Label>
+                        <TextField disable="true">854</TextField>
+                        <Label>x</Label>
+                        <TextField disable="true">480</TextField>
+                    </HBox>
+                    <HBox>
+                        <CheckBox />
+                        <Label>Launcher Visibility:</Label>
+                        <ComboBox fx:id="launchBehavior">
+                            <items>
+                                <FXCollections fx:factory="observableArrayList">
+                                    <String fx:value="Close launcher when game starts" />
+                                    <String fx:value="Minimize launcher when game starts" />
+                                    <String fx:value="Keep launcher open when game starts" />
+                                </FXCollections>
+                            </items>
+                        </ComboBox>
+                    </HBox>
+                    <columnConstraints>
+                        <ColumnConstraints />
+                        <ColumnConstraints />
+                        <ColumnConstraints />
+                        <ColumnConstraints />
+                        <ColumnConstraints />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
+                    </rowConstraints>
+                </GridPane>
+            </TitledPane>
+            <TitledPane text="Version Selection" VBox.vgrow="ALWAYS" maxWidth="Infinity" collapsible="false">
+                <VBox>
+                    <HBox>
+                        <CheckBox />
+                        <Label>Enable experimental development versions ("snapshots")</Label>
+                    </HBox>
+                    <HBox>
+                        <CheckBox />
+                        <Label>Allow use of old "Beta" Minecraft versions (From 2010-2011)</Label>
+                    </HBox>
+                    <HBox>
+                        <CheckBox />
+                        <Label>Allow use of old "Alpha" Minecraft versions (From 2010)</Label>
+                    </HBox>
+                    <HBox>
+                        <Label>Use version:</Label>
+                        <ComboBox value="Use Latest Version" />
+                    </HBox>
+                </VBox>
+            </TitledPane>
+            <TitledPane text="Java Settings (Advanced)" VBox.vgrow="ALWAYS" maxWidth="Infinity" collapsible="false">
+                <VBox>
+                    <HBox>
+                        <CheckBox />
+                        <Label>Executable:</Label>
+                        <TextField />
+                    </HBox>
+                    <HBox>
+                        <CheckBox />
+                        <Label>JVM Arguments:</Label>
+                        <TextField />
+                    </HBox>
+                </VBox>
+            </TitledPane>
+        </VBox>
+    </children>
+</AnchorPane>

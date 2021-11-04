@@ -1,5 +1,6 @@
 .root {
     -fx-background-color: image-pattern("/dirt.png", 0, 0, 64, 64, false);
+    -fx-font-family: Arial;
 }
 
 .overgrad {
@@ -19,4 +20,16 @@
 }
 loginField {
     -fx-skin: "javafx.scene.control.skin.TextFieldSkin";
+}
+
+.bolded {
+    -fx-font-weight: bold;
+}
+
+.bottom {
+    -fx-background-color: white;
+}
+
+.newsBackground {
+    -fx-background-color: image-pattern("/stone.png", 0, 0, 64, 64, false);
 }

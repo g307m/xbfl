@@ -8,6 +8,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
@@ -36,6 +39,7 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.util.MultiMap;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
+import xyz.grantlmul.xbfl.auth.Minecraft;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.awt.*;
@@ -198,11 +202,19 @@ public class LoginController {
                         File dataFile = new File(App.dataDir(), "accountdata.json");
                         dataFile.delete();
                         FileUtils.writeStringToFile(dataFile, accountData.toString(), StandardCharsets.UTF_8);
+                        Minecraft.userData = accountData;
                         System.out.println("gaming as " + accountData.get("name").getAsString());
                         Platform.runLater(() -> {
-                            Alert good = new Alert(Alert.AlertType.INFORMATION);
-                            good.setContentText("Signed in as user " + accountData.get("name").getAsString() + " successfully!");
-                            good.show();
+                            Parent parent = null;
+                            try {
+                                parent = FXMLLoader.load(getClass().getResource("home.fxml"));
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            Scene scene = new Scene(parent, 884, 541);
+                            scene.getStylesheets().clear();
+                            scene.getStylesheets().add(getClass().getResource("styles.css").toString());
+                            App.getMainStage().setScene(scene);
                         });
 
                         Platform.runLater(() -> {

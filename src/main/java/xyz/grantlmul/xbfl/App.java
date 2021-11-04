@@ -24,22 +24,32 @@ public class App extends Application {
     public static final String REGISTER_URL = "https://sisu.xboxlive.com/connect/XboxLive/?state=signup&signup=1&cobrandId=8058f65d-ce06-4c30-9559-473c9275a65d&&tid=896928775&ru=https://www.minecraft.net/en-us/login?return_url=/en-us/profile&aid=1142970254";
     public static URL OAUTH_URL;
 
+    private static Stage mainStage;
+    public static Stage getMainStage() {
+        return mainStage;
+    }
     @Override
-    public void start(Stage primaryStage) throws Exception {
-        Parent parent = null;
-        JsonObject userData = Minecraft.getUserData();
-        if (userData == null)
-            parent = FXMLLoader.load(getClass().getResource("login.fxml"));
-        else
-            parent = FXMLLoader.load(getClass().getResource("home.fxml"));
-        Scene scene = new Scene(parent, 884, 541);
-        scene.getStylesheets().clear();
-        scene.getStylesheets().add(getClass().getResource("styles.css").toString());
-        primaryStage.setTitle("XBF Launcher " + getClass().getPackage().getImplementationVersion());
-        primaryStage.getIcons().clear();
-        primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/favicon.png")));
-        primaryStage.setScene(scene);
-        primaryStage.show();
+    public void start(Stage primaryStage) {
+        mainStage = primaryStage;
+        try {
+            Parent parent = null;
+            JsonObject userData = Minecraft.refreshUserData();
+            if (userData == null)
+                parent = FXMLLoader.load(getClass().getResource("login.fxml"));
+            else
+                parent = FXMLLoader.load(getClass().getResource("home.fxml"));
+            Scene scene = new Scene(parent, 884, 541);
+            scene.getStylesheets().clear();
+            scene.getStylesheets().add(getClass().getResource("styles.css").toString());
+            primaryStage.setTitle("XBF Launcher " + getClass().getPackage().getImplementationVersion());
+            primaryStage.getIcons().clear();
+            primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/favicon.png")));
+            primaryStage.setScene(scene);
+            primaryStage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw  new RuntimeException("fat L");
+        }
     }
 
     @Override
@@ -83,7 +93,6 @@ public class App extends Application {
         bob.append(REDIRECT_URI);
         bob.append("&scope=XboxLive.signin%20offline_access");
         OAUTH_URL = new URL(bob.toString());
-        System.out.println("Course set to " + OAUTH_URL);
         launch(args);
     }
 }

@@ -8,6 +8,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import xyz.grantlmul.xbfl.auth.Minecraft;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,7 +26,12 @@ public class App extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent parent = FXMLLoader.load(getClass().getResource("login.fxml"));
+        Parent parent = null;
+        JsonObject userData = Minecraft.getUserData();
+        if (userData == null)
+            parent = FXMLLoader.load(getClass().getResource("login.fxml"));
+        else
+            parent = FXMLLoader.load(getClass().getResource("home.fxml"));
         Scene scene = new Scene(parent, 884, 541);
         scene.getStylesheets().clear();
         scene.getStylesheets().add(getClass().getResource("styles.css").toString());
@@ -78,7 +84,6 @@ public class App extends Application {
         bob.append("&scope=XboxLive.signin%20offline_access");
         OAUTH_URL = new URL(bob.toString());
         System.out.println("Course set to " + OAUTH_URL);
-
         launch(args);
     }
 }

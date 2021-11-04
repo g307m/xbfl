@@ -4,3 +4,4 @@
 .idea/
 dependency-reduced-pom.xml
 **/hs_err*.log
+*.iml

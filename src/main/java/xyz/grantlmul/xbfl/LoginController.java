@@ -15,6 +15,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
@@ -80,6 +81,7 @@ public class LoginController {
                     connection.setRequestProperty("Accept", "application/json");
                     connection.setRequestProperty("Content-Type", "application/json");
                     connection.setRequestMethod(requestMethod);
+                    connection.setDoOutput(true);
                     IOUtils.write(body, connection.getOutputStream(), StandardCharsets.UTF_8);
                     String responseBody = IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8);
                     return JsonParser.parseString(responseBody).getAsJsonObject();
@@ -88,6 +90,7 @@ public class LoginController {
                 public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException {
                     System.out.println("server handling >" + target + "<");
                     if (target.equals("/auth")) {
+                        baseRequest.setHandled(true);
                         System.out.println("baseRequest >" + baseRequest.getQueryParameters() + "<");
                         String code = baseRequest.getParameter("code");
                         response.getWriter().write("You can now close this tab and return to XBF Launcher, you will shortly be signed in.");
@@ -116,18 +119,22 @@ public class LoginController {
                                     "https://user.auth.xboxlive.com/user/authenticate",
                                     "{\"Properties\":{\"AuthMethod\": \"RPS\",\"SiteName\":\"user.auth.xboxlive.com\",\"RpsTicket\":\"d="+ms_access_token+"\"},\"RelyingParty\":\"http://auth.xboxlive.com\",\"TokenType\":\"JWT\"}",
                                     "POST");
+                            System.out.println(r);
                             xbl_token = r.get("Token").getAsString();
-                            xbl_hash = r.get("DisplayClaims.xui").getAsJsonArray().get(0).getAsJsonObject().get("uhs").getAsString();
+                            xbl_hash = r.get("DisplayClaims").getAsJsonObject().get("xui").getAsJsonArray().get(0).getAsJsonObject().get("uhs").getAsString();
                         }
 
                         // xsts auth
-                        String xsts_token = "xsts_token";
+                        String xsts_token = null;
                         {
-                            JsonObject r = jsonRequest("", "{\"Properties\": {\"SandboxId\": \"RETAIL\",\"UserTokens\": [\""+xbl_token+"\" // from above]},\"RelyingParty\": \"rp://api.minecraftservices.com/\",\"TokenType\": \"JWT\"}", "POST");
+                            JsonObject r = jsonRequest("https://xsts.auth.xboxlive.com/xsts/authorize", "{\"Properties\": {\"SandboxId\": \"RETAIL\",\"UserTokens\": [\""+xbl_token+"\"]},\"RelyingParty\": \"rp://api.minecraftservices.com/\",\"TokenType\": \"JWT\"}", "POST");
+                            System.out.println(r);
                             if (r.has("Err")) {
-                                Alert alert = new Alert(Alert.AlertType.ERROR);
-                                alert.setContentText(r.get("Message").getAsString());
-                                alert.show();
+                                Platform.runLater(() -> {
+                                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                                    alert.setContentText(r.get("Message").getAsString());
+                                    alert.show();
+                                });
                                 try {
                                     die();
                                 } catch (Exception e) {
@@ -135,7 +142,6 @@ public class LoginController {
                                 }
                             } else {
                                 xsts_token = r.get("Token").getAsString();
-                                return;
                             }
                         }
 
@@ -143,7 +149,9 @@ public class LoginController {
                         String access_token;
                         {
                             JsonObject r = jsonRequest("https://api.minecraftservices.com/authentication/login_with_xbox", "{\"identityToken\":\"XBL3.0 x="+xbl_hash+";"+xsts_token+"\"}", "POST");
+                            System.out.println(r);
                             access_token = r.get("access_token").getAsString();
+                            System.out.println("mcauthed");
                         }
 
                         // ownership verification
@@ -153,10 +161,13 @@ public class LoginController {
                             connection.setRequestProperty("Authorization", "Bearer " + access_token);
                             String responseBody = IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8);
                             JsonObject responseJson = JsonParser.parseString(responseBody).getAsJsonObject();
+                            System.out.println(responseBody);
                             if (responseJson.get("items").getAsJsonArray().size() < 2) {
-                                Alert alert = new Alert(Alert.AlertType.ERROR);
-                                alert.setContentText("This Microsoft account does not have a Minecraft: Java Edition account connected to it.");
-                                alert.show();
+                                Platform.runLater(() -> {
+                                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                                    alert.setContentText("This Microsoft account does not have a Minecraft: Java Edition account connected to it.");
+                                    alert.show();
+                                });
                                 try {
                                     die();
                                 } catch (Exception e) {
@@ -167,6 +178,7 @@ public class LoginController {
                                 listenerThread.stop();
                                 return;
                             }
+                            System.out.println("owning");
                         }
 
                         // get account data
@@ -176,28 +188,37 @@ public class LoginController {
                             connection.setRequestMethod("GET");
                             connection.setRequestProperty("Authorization", "Bearer " + access_token);
                             String responseBody = IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8);
+                            System.out.println(responseBody);
                             accountData = JsonParser.parseString(responseBody).getAsJsonObject();
+                            System.out.println("data");
                         }
 
                         // save account data
                         accountData.addProperty("access_token", access_token);
                         File dataFile = new File(App.dataDir(), "accountdata.json");
-                        IOUtils.write(accountData.toString(), new FileWriter(dataFile));
+                        dataFile.delete();
+                        FileUtils.writeStringToFile(dataFile, accountData.toString(), StandardCharsets.UTF_8);
                         System.out.println("gaming as " + accountData.get("name").getAsString());
-                        Alert good = new Alert(Alert.AlertType.INFORMATION);
-                        good.setContentText("Signed in as user " + accountData.get("name").getAsString() + "successfully!");
-                        good.show();
+                        Platform.runLater(() -> {
+                            Alert good = new Alert(Alert.AlertType.INFORMATION);
+                            good.setContentText("Signed in as user " + accountData.get("name").getAsString() + " successfully!");
+                            good.show();
+                        });
 
-                        try {
-                            die();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            Alert alert = new Alert(Alert.AlertType.ERROR);
-                            alert.setContentText("I tried killing myself, but I just won't die!");
-                            alert.show();
-                        }
+                        Platform.runLater(() -> {
+                            try {
+                                runningServer = false;
+                                die();
+                                listenerThread.stop();
+                                msButton.setText("Microsoft Log In");
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                Alert alert = new Alert(Alert.AlertType.ERROR);
+                                alert.setContentText("I tried killing myself, but I just won't die!");
+                                alert.show();
+                            }
+                        });
                     }
-                    baseRequest.setHandled(true);
                 }
             });
             try {

@@ -7,88 +7,106 @@
 <?import javafx.scene.layout.*?>
 
 <?import javafx.collections.FXCollections?>
+<?import javafx.scene.shape.Rectangle?>
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="xyz.grantlmul.xbfl.ProfileController"
             prefHeight="400.0" prefWidth="600.0">
-    <children>
-        <VBox>
-            <TitledPane text="Profile Info" VBox.vgrow="ALWAYS" maxWidth="Infinity" collapsible="false">
-                <GridPane>
-                    <Label GridPane.columnIndex="0" GridPane.rowIndex="0">Profile Name:</Label>
-                    <TextField GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.columnSpan="3">Profile Name</TextField>
-                    <CheckBox GridPane.columnIndex="0" GridPane.rowIndex="1" />
-                    <Label GridPane.columnIndex="1" GridPane.rowIndex="1" >Game Directory: </Label>
-                    <TextField disable="true" />
-                    <HBox>
-                        <CheckBox />
-                        <Label>Resolution:</Label>
-                        <TextField disable="true">854</TextField>
-                        <Label>x</Label>
-                        <TextField disable="true">480</TextField>
-                    </HBox>
-                    <HBox>
-                        <CheckBox />
-                        <Label>Launcher Visibility:</Label>
-                        <ComboBox fx:id="launchBehavior">
-                            <items>
-                                <FXCollections fx:factory="observableArrayList">
-                                    <String fx:value="Close launcher when game starts" />
-                                    <String fx:value="Minimize launcher when game starts" />
-                                    <String fx:value="Keep launcher open when game starts" />
-                                </FXCollections>
-                            </items>
-                        </ComboBox>
-                    </HBox>
-                    <columnConstraints>
-                        <ColumnConstraints />
-                        <ColumnConstraints />
-                        <ColumnConstraints />
-                        <ColumnConstraints />
-                        <ColumnConstraints />
-                    </columnConstraints>
-                    <rowConstraints>
-                        <RowConstraints />
-                        <RowConstraints />
-                        <RowConstraints />
-                        <RowConstraints />
-                    </rowConstraints>
-                </GridPane>
-            </TitledPane>
-            <TitledPane text="Version Selection" VBox.vgrow="ALWAYS" maxWidth="Infinity" collapsible="false">
-                <VBox>
-                    <HBox>
-                        <CheckBox />
-                        <Label>Enable experimental development versions ("snapshots")</Label>
-                    </HBox>
-                    <HBox>
-                        <CheckBox />
-                        <Label>Allow use of old "Beta" Minecraft versions (From 2010-2011)</Label>
-                    </HBox>
-                    <HBox>
-                        <CheckBox />
-                        <Label>Allow use of old "Alpha" Minecraft versions (From 2010)</Label>
-                    </HBox>
-                    <HBox>
-                        <Label>Use version:</Label>
-                        <ComboBox value="Use Latest Version" />
-                    </HBox>
-                </VBox>
-            </TitledPane>
-            <TitledPane text="Java Settings (Advanced)" VBox.vgrow="ALWAYS" maxWidth="Infinity" collapsible="false">
-                <VBox>
-                    <HBox>
-                        <CheckBox />
-                        <Label>Executable:</Label>
-                        <TextField />
-                    </HBox>
-                    <HBox>
-                        <CheckBox />
-                        <Label>JVM Arguments:</Label>
-                        <TextField />
-                    </HBox>
-                </VBox>
-            </TitledPane>
-        </VBox>
-    </children>
+    <VBox maxWidth="Infinity" maxHeight="Infinity" AnchorPane.bottomAnchor="0" AnchorPane.topAnchor="0"
+          AnchorPane.rightAnchor="0" AnchorPane.leftAnchor="0">
+        <TitledPane text="Profile Info" VBox.vgrow="ALWAYS" maxWidth="Infinity" maxHeight="Infinity"
+                    collapsible="false">
+            <GridPane>
+                <Label GridPane.columnIndex="0" GridPane.rowIndex="0">Profile Name:</Label>
+                <TextField GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.hgrow="ALWAYS"
+                           GridPane.columnSpan="4" fx:id="name">Profile Name
+                </TextField>
+                <CheckBox GridPane.columnIndex="0" GridPane.rowIndex="1" fx:id="customDirectory"/>
+                <Label GridPane.columnIndex="1" GridPane.rowIndex="1">Game Directory:</Label>
+                <TextField GridPane.columnIndex="2" GridPane.rowIndex="1" fx:id="directory" GridPane.hgrow="ALWAYS"
+                           GridPane.columnSpan="3" disable="true"/>
+                <CheckBox GridPane.columnIndex="0" GridPane.rowIndex="2" fx:id="customDimensions"/>
+                <Label GridPane.columnIndex="1" GridPane.rowIndex="2">Resolution:</Label>
+                <TextField GridPane.columnIndex="2" GridPane.rowIndex="2" fx:id="hres" GridPane.hgrow="ALWAYS"
+                           disable="true">854
+                </TextField>
+                <Label GridPane.columnIndex="3" GridPane.rowIndex="2">x</Label>
+                <TextField GridPane.columnIndex="4" GridPane.rowIndex="2" fx:id="vres" GridPane.hgrow="ALWAYS"
+                           disable="true">480
+                </TextField>
+                <CheckBox GridPane.columnIndex="0" GridPane.rowIndex="3" fx:id="customLaunch"/>
+                <Label GridPane.columnIndex="1" GridPane.rowIndex="3">Launcher Visibility:</Label>
+                <ComboBox GridPane.columnIndex="2" GridPane.rowIndex="3" GridPane.hgrow="ALWAYS" GridPane.columnSpan="3"
+                          maxWidth="Infinity" fx:id="launchBehavior">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="Close launcher when game starts"/>
+                            <String fx:value="Minimize launcher when game starts"/>
+                            <String fx:value="Keep launcher open when game starts"/>
+                        </FXCollections>
+                    </items>
+                </ComboBox>
+                <columnConstraints>
+                    <ColumnConstraints/>
+                    <ColumnConstraints/>
+                    <ColumnConstraints/>
+                    <ColumnConstraints/>
+                    <ColumnConstraints/>
+                </columnConstraints>
+                <rowConstraints>
+                    <RowConstraints/>
+                    <RowConstraints/>
+                    <RowConstraints/>
+                    <RowConstraints/>
+                </rowConstraints>
+            </GridPane>
+        </TitledPane>
+        <TitledPane text="Version Selection" VBox.vgrow="ALWAYS" maxWidth="Infinity" maxHeight="Infinity"
+                    collapsible="false">
+            <GridPane>
+                <columnConstraints>
+                    <ColumnConstraints/>
+                    <ColumnConstraints/>
+                </columnConstraints>
+                <rowConstraints>
+                    <RowConstraints/>
+                    <RowConstraints/>
+                    <RowConstraints/>
+                    <RowConstraints/>
+                </rowConstraints>
+                <CheckBox GridPane.columnIndex="0" GridPane.rowIndex="0" fx:id="enableSnapshots"/>
+                <Label GridPane.columnIndex="1" GridPane.rowIndex="0" maxWidth="Infinity" GridPane.hgrow="ALWAYS"
+                       >Enable experimental development versions ("snapshots")
+                </Label>
+                <CheckBox GridPane.columnIndex="0" GridPane.rowIndex="1" fx:id="enableAlpha"/>
+                <Label GridPane.columnIndex="1" GridPane.rowIndex="1" maxWidth="Infinity" GridPane.hgrow="ALWAYS"
+                       >Allow use of old "Beta" Minecraft versions (From 2010-2011)
+                </Label>
+                <CheckBox GridPane.columnIndex="0" GridPane.rowIndex="2" fx:id="enableBeta"/>
+                <Label GridPane.columnIndex="1" GridPane.rowIndex="2" maxWidth="Infinity" GridPane.hgrow="ALWAYS"
+                       >Allow use of old "Alpha" Minecraft versions (From 2010)
+                </Label>
+                <Label GridPane.columnIndex="0" GridPane.rowIndex="3">Use version:</Label>
+                <ComboBox GridPane.columnIndex="1" GridPane.rowIndex="3" maxWidth="Infinity" GridPane.hgrow="ALWAYS"
+                          fx:id="gameVersion" value="Use Latest Version"/>
+            </GridPane>
+        </TitledPane>
+        <TitledPane text="Java Settings (Advanced)" VBox.vgrow="ALWAYS" maxWidth="Infinity" maxHeight="Infinity"
+                    collapsible="false">
+            <GridPane>
+                <CheckBox GridPane.columnIndex="0" GridPane.rowIndex="0" fx:id="customJava"/>
+                <Label GridPane.columnIndex="1" GridPane.rowIndex="0">Executable:</Label>
+                <TextField GridPane.columnIndex="2" GridPane.rowIndex="0" GridPane.hgrow="ALWAYS" maxWidth="Infinity" fx:id="jvm"/>
+                <CheckBox GridPane.columnIndex="0" GridPane.rowIndex="1" fx:id="customJvmArgs"/>
+                <Label GridPane.columnIndex="1" GridPane.rowIndex="1">JVM Arguments:</Label>
+                <TextField GridPane.columnIndex="2" GridPane.rowIndex="1" GridPane.hgrow="ALWAYS" maxWidth="Infinity" fx:id="args"/>
+            </GridPane>
+        </TitledPane>
+        <HBox>
+            <Button onMouseClicked="#cancel">Cancel</Button>
+            <Region maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
+            <Button onMouseClicked="#openDir">Open Game Dir</Button>
+            <Button onMouseClicked="#save">Save Profile</Button>
+        </HBox>
+    </VBox>
 </AnchorPane>

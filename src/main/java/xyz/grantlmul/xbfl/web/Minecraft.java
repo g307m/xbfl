@@ -1,15 +1,20 @@
-package xyz.grantlmul.xbfl.auth;
+package xyz.grantlmul.xbfl.web;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
 import xyz.grantlmul.xbfl.App;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.net.http.HttpClient;
 import java.nio.charset.StandardCharsets;
 
 public class Minecraft {
@@ -33,5 +38,12 @@ public class Minecraft {
             nude.addProperty("access_token", access_token);
             return nude;
         }
+    }
+    public static JsonObject getVersionManifest() throws IOException {
+        CloseableHttpClient client = HttpClients.createDefault();
+        HttpGet request = new HttpGet("https://launchermeta.mojang.com/mc/game/version_manifest.json");
+        CloseableHttpResponse response = client.execute(request);
+        String responseBody = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
+        return JsonParser.parseString(responseBody).getAsJsonObject();
     }
 }

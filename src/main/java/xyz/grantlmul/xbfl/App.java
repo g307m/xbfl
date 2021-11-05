@@ -8,7 +8,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import xyz.grantlmul.xbfl.auth.Minecraft;
+import org.apache.commons.io.FileUtils;
+import xyz.grantlmul.xbfl.web.Minecraft;
 
 import java.io.File;
 import java.io.IOException;
@@ -93,6 +94,12 @@ public class App extends Application {
         bob.append(REDIRECT_URI);
         bob.append("&scope=XboxLive.signin%20offline_access");
         OAUTH_URL = new URL(bob.toString());
+
+        File profilesDir = FileUtils.getFile(dataDir(), "profiles");
+        profilesDir.mkdir();
+        File defaultDir = FileUtils.getFile(profilesDir, "default");
+        defaultDir.mkdir();
+
         launch(args);
     }
 }

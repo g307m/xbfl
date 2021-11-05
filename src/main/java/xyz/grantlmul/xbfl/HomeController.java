@@ -6,8 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.DialogPane;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
@@ -15,10 +14,9 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.Window;
-import xyz.grantlmul.xbfl.auth.Minecraft;
+import xyz.grantlmul.xbfl.data.Profile;
+import xyz.grantlmul.xbfl.web.Minecraft;
 
-import javax.swing.text.TabSet;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -27,14 +25,10 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 public class HomeController implements Initializable {
-    @FXML
-    private Text usernameText;
-
-    @FXML
-    private TextArea logOutput;
-
-    @FXML
-    private TabPane windowTabs;
+    @FXML ComboBox<Profile> profileList;
+    @FXML Text usernameText;
+    @FXML TextArea logOutput;
+    @FXML TabPane windowTabs;
 
     public void handleLogOutClick(MouseEvent mouseEvent) throws IOException {
         File dataFile = new File(App.dataDir(), "accountdata.json");
@@ -71,6 +65,7 @@ public class HomeController implements Initializable {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("profile.fxml"));
         Parent parent = loader.load();
         ProfileController controller = loader.getController();
+        controller.loadProfile();
         Scene scene = new Scene(parent);
         Stage stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);

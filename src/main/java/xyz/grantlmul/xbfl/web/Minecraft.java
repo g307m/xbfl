@@ -19,24 +19,30 @@ import java.nio.charset.StandardCharsets;
 
 public class Minecraft {
     public static JsonObject userData;
-    public static JsonObject refreshUserData() throws IOException {
-        File accdat = new File(App.dataDir(), "accountdata.json");
-        if (!accdat.exists())
+
+    public static JsonObject refreshUserData() {
+        try {
+            File accdat = new File(App.dataDir(), "accountdata.json");
+            if (!accdat.exists())
+                return null;
+            String accdatstr = null;
+            accdatstr = FileUtils.readFileToString(accdat, StandardCharsets.UTF_8);
+            JsonObject accdato = JsonParser.parseString(accdatstr).getAsJsonObject();
+            userData = accdato.deepCopy();
+            String access_token = accdato.get("access_token").getAsString();
+            HttpsURLConnection connection = (HttpsURLConnection) new URL("https://api.minecraftservices.com/minecraft/profile").openConnection();
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Authorization", "Bearer " + access_token);
+            String responseBody = IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8);
+            JsonObject nude = JsonParser.parseString(responseBody).getAsJsonObject();
+            if (nude.has("error"))
+                return null;
+            else {
+                nude.addProperty("access_token", access_token);
+                return nude;
+            }
+        } catch (IOException e) {
             return null;
-        String accdatstr = FileUtils.readFileToString(accdat, StandardCharsets.UTF_8);
-        JsonObject accdato = JsonParser.parseString(accdatstr).getAsJsonObject();
-        userData = accdato.deepCopy();
-        String access_token = accdato.get("access_token").getAsString();
-        HttpsURLConnection connection = (HttpsURLConnection) new URL("https://api.minecraftservices.com/minecraft/profile").openConnection();
-        connection.setRequestMethod("GET");
-        connection.setRequestProperty("Authorization", "Bearer " + access_token);
-        String responseBody = IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8);
-        JsonObject nude = JsonParser.parseString(responseBody).getAsJsonObject();
-        if (nude.has("error"))
-            return null;
-        else {
-            nude.addProperty("access_token", access_token);
-            return nude;
         }
     }
     public static JsonObject getVersionManifest() throws IOException {

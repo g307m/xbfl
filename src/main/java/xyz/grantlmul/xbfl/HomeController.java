@@ -59,13 +59,15 @@ public class HomeController implements Initializable {
         System.setOut(new PrintStream(outputStream, true));
         System.out.println("Redirecting output to application.");
         this.usernameText.setText(Minecraft.userData.get("name").getAsString());
+
+
     }
 
     public void handleEditClick(MouseEvent mouseEvent) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("profile.fxml"));
         Parent parent = loader.load();
         ProfileController controller = loader.getController();
-        controller.loadProfile();
+        controller.loadProfile(profileList.getValue());
         Scene scene = new Scene(parent);
         Stage stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);

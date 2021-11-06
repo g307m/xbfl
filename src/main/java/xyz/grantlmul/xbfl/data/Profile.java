@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import java.nio.file.Path;
 import java.util.Optional;
 import java.util.OptionalInt;
+import java.util.UUID;
 
 public record Profile(String name,
                       Path directory,

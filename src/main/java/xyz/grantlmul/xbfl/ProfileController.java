@@ -136,6 +136,7 @@ public class ProfileController implements Initializable {
                 case "release" -> true;
                 case "old_beta" -> enableBeta.isSelected();
                 case "old_alpha" -> enableAlpha.isSelected();
+                default -> false;
             };
             if (yes)
                 gameVersion.getItems().add(object);
@@ -171,12 +172,10 @@ public class ProfileController implements Initializable {
                 jvm.getText().isEmpty() ? null : jvm.getText(),
                 args.getText().isEmpty() ? null : jvm.getText()
         );
-        File profilesDir = FileUtils.getFile(App.dataDir(), "profiles");
         File profilesFile = FileUtils.getFile(profilesDir, "profiles.json");
         File profileDir = FileUtils.getFile(profilesDir, uuid.toString());
         File profileConfig = FileUtils.getFile(profileDir, "profile.json");
-        if (!profileDir.isDirectory())
-            profileDir.mkdir();
+        profileDir.mkdir();
         profileConfig.delete();
         FileUtils.writeStringToFile(profileConfig, profile.toJson().toString(), StandardCharsets.UTF_8);
     }

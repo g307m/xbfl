@@ -78,6 +78,26 @@ public class App extends Application {
         return dataDir;
     }
 
+    public static File dotMinecraft() {
+        String workingDirectory;
+        String osName = (System.getProperty("os.name")).toUpperCase();
+        if (osName.contains("WIN"))
+        {
+            workingDirectory = System.getenv("AppData");
+        }
+        else
+        {
+            workingDirectory = System.getProperty("user.home");
+            workingDirectory += "/Library/Application Support";
+        }
+        File dataDir = Path.of(workingDirectory, ".minecraft").toFile();
+        if (!dataDir.isDirectory()) {
+            dataDir.delete();
+            dataDir.mkdir();
+        }
+        return dataDir;
+    }
+
     public static Thread thread;
     public static JsonObject authConf;
     public static void main(String[] args) throws IOException {

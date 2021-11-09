@@ -15,6 +15,11 @@
 <?import javafx.scene.text.TextFlow?>
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.control.TextArea?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.collections.FXCollections?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="xyz.grantlmul.xbfl.HomeController" stylesheets="/xyz/grantlmul/xbfl/styles.css">
     <children>
@@ -23,18 +28,37 @@
                 <tabs>
                     <Tab fx:id="newsTab" closable="false" text="Minecraft News">
                         <AnchorPane fx:id="newsPane" styleClass="newsBackground">
-
+                            <padding>
+                                <Insets topRightBottomLeft="24" />
+                            </padding>
+                            <Label styleClass="mcnewstitle">Minecraft News (Not yet implemented!)</Label>
                         </AnchorPane>
                     </Tab>
                     <Tab fx:id="logTab" closable="false" text="Launcher Log">
-                        <TextArea fx:id="logOutput" editable="false" />
+                        <TextArea fx:id="logOutput" editable="false" style="-fx-font-family: monospace" />
                     </Tab>
                     <Tab fx:id="profilesTab" closable="false" text="Profile Editor">
-
+                        <TableView fx:id="profileTable">
+                            <columns>
+                                <TableColumn text="Version name" fx:id="nameColumn">
+                                    <cellValueFactory><PropertyValueFactory property="name" /></cellValueFactory>
+                                </TableColumn>
+                                <TableColumn text="Version">
+                                    <cellValueFactory><PropertyValueFactory property="gameVersion" /></cellValueFactory>
+                                </TableColumn>
+                            </columns>
+                            <items>
+                                <FXCollections fx:factory="observableArrayList">
+                                </FXCollections>
+                            </items>
+                            <sortOrder>
+                                <fx:reference source="nameColumn" />
+                            </sortOrder>
+                        </TableView>
                     </Tab>
                 </tabs>
             </TabPane>
-            <GridPane gridLinesVisible="true" prefHeight="70" styleClass="bottom" alignment="CENTER" >
+            <GridPane prefHeight="70" styleClass="bottom" alignment="CENTER" >
                 <HBox GridPane.columnIndex="0" maxWidth="Infinity" GridPane.hgrow="ALWAYS">
                     <VBox>
                         <HBox>
@@ -42,7 +66,7 @@
                             <ComboBox fx:id="profileList" maxWidth="Infinity" HBox.hgrow="ALWAYS" />
                         </HBox>
                         <HBox>
-                            <Button>New Profile</Button>
+                            <Button onMouseClicked="#handleNewClick" >New Profile</Button>
                             <Button onMouseClicked="#handleEditClick" >Edit Profile</Button>
                         </HBox>
                     </VBox>

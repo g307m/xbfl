@@ -11,7 +11,7 @@
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="xyz.grantlmul.xbfl.ProfileController"
-            prefHeight="400.0" prefWidth="600.0">
+            prefHeight="400.0" prefWidth="600.0" fx:id="rootPane">
     <VBox maxWidth="Infinity" maxHeight="Infinity" AnchorPane.bottomAnchor="0" AnchorPane.topAnchor="0"
           AnchorPane.rightAnchor="0" AnchorPane.leftAnchor="0">
         <TitledPane text="Profile Info" VBox.vgrow="ALWAYS" maxWidth="Infinity" maxHeight="Infinity"
@@ -21,20 +21,19 @@
                 <TextField GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.hgrow="ALWAYS"
                            GridPane.columnSpan="4" fx:id="name">Profile Name
                 </TextField>
-                <CheckBox GridPane.columnIndex="0" GridPane.rowIndex="1" fx:id="customDirectory"/>
+                <CheckBox GridPane.columnIndex="0" GridPane.rowIndex="1" fx:id="useCustomDirectory"/>
                 <Label GridPane.columnIndex="1" GridPane.rowIndex="1">Game Directory:</Label>
                 <TextField GridPane.columnIndex="2" GridPane.rowIndex="1" fx:id="directory" GridPane.hgrow="ALWAYS"
                            GridPane.columnSpan="3" disable="true"/>
-                <CheckBox GridPane.columnIndex="0" GridPane.rowIndex="2" fx:id="customDimensions"/>
+                <CheckBox GridPane.columnIndex="0" GridPane.rowIndex="2" fx:id="useCustomResolution"/>
                 <Label GridPane.columnIndex="1" GridPane.rowIndex="2">Resolution:</Label>
-                <TextField GridPane.columnIndex="2" GridPane.rowIndex="2" fx:id="hres" GridPane.hgrow="ALWAYS"
-                           disable="true">854
+                <TextField GridPane.columnIndex="2" GridPane.rowIndex="2" fx:id="gameWidth" GridPane.hgrow="ALWAYS">854
                 </TextField>
                 <Label GridPane.columnIndex="3" GridPane.rowIndex="2">x</Label>
-                <TextField GridPane.columnIndex="4" GridPane.rowIndex="2" fx:id="vres" GridPane.hgrow="ALWAYS"
+                <TextField GridPane.columnIndex="4" GridPane.rowIndex="2" fx:id="hameHeight" GridPane.hgrow="ALWAYS"
                            disable="true">480
                 </TextField>
-                <CheckBox GridPane.columnIndex="0" GridPane.rowIndex="3" fx:id="customLaunch"/>
+                <CheckBox GridPane.columnIndex="0" GridPane.rowIndex="3" fx:id="useCustomVisibility"/>
                 <Label GridPane.columnIndex="1" GridPane.rowIndex="3">Launcher Visibility:</Label>
                 <ComboBox GridPane.columnIndex="2" GridPane.rowIndex="3" GridPane.hgrow="ALWAYS" GridPane.columnSpan="3"
                           maxWidth="Infinity" fx:id="launchBehavior">
@@ -74,32 +73,31 @@
                     <RowConstraints/>
                     <RowConstraints/>
                 </rowConstraints>
-                <CheckBox GridPane.columnIndex="0" GridPane.rowIndex="0" fx:id="enableSnapshots"/>
+                <CheckBox GridPane.columnIndex="0" GridPane.rowIndex="0" fx:id="enableSnapshots" onMouseClicked="#refreshVersions"/>
                 <Label GridPane.columnIndex="1" GridPane.rowIndex="0" maxWidth="Infinity" GridPane.hgrow="ALWAYS"
                        >Enable experimental development versions ("snapshots")
                 </Label>
-                <CheckBox GridPane.columnIndex="0" GridPane.rowIndex="1" fx:id="enableAlpha"/>
+                <CheckBox GridPane.columnIndex="0" GridPane.rowIndex="1" fx:id="enableBeta" onMouseClicked="#refreshVersions"/>
                 <Label GridPane.columnIndex="1" GridPane.rowIndex="1" maxWidth="Infinity" GridPane.hgrow="ALWAYS"
                        >Allow use of old "Beta" Minecraft versions (From 2010-2011)
                 </Label>
-                <CheckBox GridPane.columnIndex="0" GridPane.rowIndex="2" fx:id="enableBeta"/>
+                <CheckBox GridPane.columnIndex="0" GridPane.rowIndex="2" fx:id="enableAlpha" onMouseClicked="#refreshVersions"/>
                 <Label GridPane.columnIndex="1" GridPane.rowIndex="2" maxWidth="Infinity" GridPane.hgrow="ALWAYS"
                        >Allow use of old "Alpha" Minecraft versions (From 2010)
                 </Label>
                 <Label GridPane.columnIndex="0" GridPane.rowIndex="3">Use version:</Label>
-                <ComboBox GridPane.columnIndex="1" GridPane.rowIndex="3" maxWidth="Infinity" GridPane.hgrow="ALWAYS"
-                          fx:id="gameVersion" value="Use Latest Version"/>
+                <ComboBox GridPane.columnIndex="1" GridPane.rowIndex="3" maxWidth="Infinity" GridPane.hgrow="ALWAYS" fx:id="gameVersion" />
             </GridPane>
         </TitledPane>
         <TitledPane text="Java Settings (Advanced)" VBox.vgrow="ALWAYS" maxWidth="Infinity" maxHeight="Infinity"
                     collapsible="false">
             <GridPane>
-                <CheckBox GridPane.columnIndex="0" GridPane.rowIndex="0" fx:id="customJava"/>
+                <CheckBox GridPane.columnIndex="0" GridPane.rowIndex="0" fx:id="useCustomJava"/>
                 <Label GridPane.columnIndex="1" GridPane.rowIndex="0">Executable:</Label>
-                <TextField GridPane.columnIndex="2" GridPane.rowIndex="0" GridPane.hgrow="ALWAYS" maxWidth="Infinity" fx:id="jvm"/>
-                <CheckBox GridPane.columnIndex="0" GridPane.rowIndex="1" fx:id="customJvmArgs"/>
+                <TextField GridPane.columnIndex="2" GridPane.rowIndex="0" GridPane.hgrow="ALWAYS" maxWidth="Infinity" fx:id="javaExecutable"/>
+                <CheckBox GridPane.columnIndex="0" GridPane.rowIndex="1" fx:id="useCustomArgs"/>
                 <Label GridPane.columnIndex="1" GridPane.rowIndex="1">JVM Arguments:</Label>
-                <TextField GridPane.columnIndex="2" GridPane.rowIndex="1" GridPane.hgrow="ALWAYS" maxWidth="Infinity" fx:id="args"/>
+                <TextField GridPane.columnIndex="2" GridPane.rowIndex="1" GridPane.hgrow="ALWAYS" maxWidth="Infinity" fx:id="javaArguments"/>
             </GridPane>
         </TitledPane>
         <HBox>

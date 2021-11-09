@@ -2,6 +2,11 @@ package xyz.grantlmul.xbfl.web;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.SimpleListProperty;
+import javafx.collections.ModifiableObservableListBase;
+import javafx.collections.ObservableList;
+import javafx.collections.ObservableListBase;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
@@ -16,6 +21,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.http.HttpClient;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 
 public class Minecraft {
     public static JsonObject userData;
@@ -45,11 +51,58 @@ public class Minecraft {
             return null;
         }
     }
-    public static JsonObject getVersionManifest() throws IOException {
+
+    static JsonObject versionManifest;
+
+    public static void refreshVersionManifest() throws IOException {
         CloseableHttpClient client = HttpClients.createDefault();
         HttpGet request = new HttpGet("https://launchermeta.mojang.com/mc/game/version_manifest.json");
         CloseableHttpResponse response = client.execute(request);
         String responseBody = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
-        return JsonParser.parseString(responseBody).getAsJsonObject();
+        versionManifest = JsonParser.parseString(responseBody).getAsJsonObject();
+        versions.clear();
+        versions.add(l);
+        versionManifest.getAsJsonArray("versions").forEach(jsonElement -> versions.get().add(jsonElement.getAsJsonObject()));
+    }
+
+    private static final JsonObject l = new JsonObject();
+    static {
+        l.addProperty("id", "latest");
+        l.addProperty("type", "latest");
+    }
+
+    public static JsonObject getVersionManifest() {
+        return versionManifest;
+    }
+
+    private static ListProperty<JsonObject> versions = new SimpleListProperty<>(new ModifiableObservableListBase<>() {
+        private ArrayList<JsonObject> internal = new ArrayList<>();
+        @Override
+        public int size() {
+            return internal.size();
+        }
+
+        @Override
+        protected void doAdd(int index, JsonObject element) {
+            internal.add(index, element);
+        }
+
+        @Override
+        protected JsonObject doSet(int index, JsonObject element) {
+            return internal.set(index, element);
+        }
+
+        @Override
+        protected JsonObject doRemove(int index) {
+            return internal.remove(index);
+        }
+
+        @Override
+        public JsonObject get(int index) {
+            return internal.get(index);
+        }
+    });
+    public static ListProperty<JsonObject> getVersions() {
+        return versions;
     }
 }

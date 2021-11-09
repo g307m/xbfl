@@ -72,6 +72,9 @@
                 <version>3.8.0</version>
                 <configuration>
                     <release>16</release>
+                    <compilerArgs>
+                        <arg>--add-exports</arg><arg>javafx.base/com.sun.javafx.binding=xyz.grantlmul.xbfl</arg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
             <plugin>
@@ -85,6 +88,9 @@
                         <id>default-cli</id>
                         <configuration>
                             <mainClass>xyz.grantlmul.xbfl.Launcher</mainClass>
+                            <jvmArgs>
+                                <jvmArg>--add-opens</jvmArg><jvmArg>javafx.base/com.sun.javafx.binding=xyz.grantlmul.xbfl</jvmArg>
+                            </jvmArgs>
                         </configuration>
                     </execution>
                 </executions>

@@ -39,6 +39,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class LoginController {
 
@@ -61,11 +62,10 @@ public class LoginController {
         Server server;
         @Override
         public void run() {
-            System.out.println("running server");
             QueuedThreadPool threadPool = new QueuedThreadPool();
             server = new Server(threadPool);
             ServerConnector connector = new ServerConnector(server);
-            connector.setPort(54321);
+            connector.setPort(45982);
             server.addConnector(connector);
             server.setHandler(new AbstractHandler() {
                 JsonObject jsonRequest(String url, String body, String requestMethod) throws IOException {
@@ -93,10 +93,10 @@ public class LoginController {
                             HttpPost httpPost = new HttpPost("https://login.live.com/oauth20_token.srf");
                             List<NameValuePair> params = new ArrayList<NameValuePair>();
                             params.add(new BasicNameValuePair("client_id", App.authConf.get("client_id").getAsString()));
-                            //params.add(new BasicNameValuePair("client_secret", App.authConf.get("client_secret").getAsString()));
                             params.add(new BasicNameValuePair("code", code));
                             params.add(new BasicNameValuePair("grant_type", "authorization_code"));
                             params.add(new BasicNameValuePair("redirect_uri", App.REDIRECT_URI));
+                            System.out.println(params);
                             httpPost.setEntity(new UrlEncodedFormEntity(params));
                             CloseableHttpResponse re = httpClient.execute(httpPost);
                             JsonObject responseJson = JsonParser.parseString(new String(re.getEntity().getContent().readAllBytes())).getAsJsonObject();
@@ -225,9 +225,11 @@ public class LoginController {
                 server.start();
             } catch (Exception e) {
                 e.printStackTrace();
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setContentText("Something fucked up while trying to set things up for logging in.");
-                alert.show();
+                Platform.runLater(() -> {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setContentText("Something fucked up while trying to set things up for logging in.");
+                    alert.show();
+                });
             }
         }
         public void die() throws Exception {

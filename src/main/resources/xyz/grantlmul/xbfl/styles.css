@@ -33,3 +33,11 @@ loginField {
 .newsBackground {
     -fx-background-color: image-pattern("/stone.png", 0, 0, 64, 64, false);
 }
+
+.mcnewstitle {
+    -fx-text-fill: #e0d0d0;
+    -fx-font-weight: bold;
+    -fx-font-size: 2em;
+    -fx-start-margin: 0.67em;
+    -fx-end-margin: 0.67em;
+}

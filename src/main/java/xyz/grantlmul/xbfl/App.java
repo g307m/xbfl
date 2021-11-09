@@ -21,7 +21,7 @@ import java.nio.file.Path;
  */
 public class App extends Application {
 
-    public static final String REDIRECT_URI = "http://localhost:54321/auth";
+    public static final String REDIRECT_URI = "http://localhost:45982/auth";
     public static final String REGISTER_URL = "https://sisu.xboxlive.com/connect/XboxLive/?state=signup&signup=1&cobrandId=8058f65d-ce06-4c30-9559-473c9275a65d&&tid=896928775&ru=https://www.minecraft.net/en-us/login?return_url=/en-us/profile&aid=1142970254";
     public static URL OAUTH_URL;
 
@@ -82,16 +82,16 @@ public class App extends Application {
     public static File dotMinecraft() {
         String workingDirectory;
         String osName = (System.getProperty("os.name")).toUpperCase();
-        if (osName.contains("WIN"))
-        {
+        if (osName.contains("WIN")) {
             workingDirectory = System.getenv("AppData");
-        }
-        else
-        {
+        } else if (osName.contains("MAC")) {
+            workingDirectory = "/Library/Application Support";
+        } else {
             workingDirectory = System.getProperty("user.home");
-            workingDirectory += "/Library/Application Support";
         }
-        File dataDir = Path.of(workingDirectory, ".minecraft").toFile();
+        File dataDir = FileUtils.getFile(workingDirectory, ".minecraft");
+        if (osName.contains("MAC"))
+            dataDir = FileUtils.getFile(workingDirectory, "minecraft");
         if (!dataDir.isDirectory()) {
             dataDir.delete();
             dataDir.mkdir();
@@ -101,6 +101,7 @@ public class App extends Application {
 
     public static Thread thread;
     public static JsonObject authConf;
+    public static ProfileManager profileManager;
     public static void main(String[] args) throws IOException {
         thread = Thread.currentThread();
         authConf = JsonParser.parseString(
@@ -114,12 +115,8 @@ public class App extends Application {
         bob.append(REDIRECT_URI);
         bob.append("&scope=XboxLive.signin%20offline_access");
         OAUTH_URL = new URL(bob.toString());
-
-        File profilesDir = FileUtils.getFile(dataDir(), "profiles");
-        profilesDir.mkdir();
-        File defaultDir = FileUtils.getFile(profilesDir, "default");
-        defaultDir.mkdir();
-
+        Minecraft.refreshVersionManifest();
+        profileManager = new ProfileManager();
         launch(args);
     }
 }

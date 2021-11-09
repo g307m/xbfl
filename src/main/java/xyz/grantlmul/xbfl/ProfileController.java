@@ -1,154 +1,136 @@
 package xyz.grantlmul.xbfl;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import javafx.application.Platform;
+import javafx.collections.transformation.FilteredList;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import org.apache.commons.io.FileUtils;
-import xyz.grantlmul.xbfl.data.Profile;
+import javafx.stage.WindowEvent;
+import javafx.util.Callback;
 import xyz.grantlmul.xbfl.web.Minecraft;
 
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.util.*;
+import java.util.Objects;
+import java.util.ResourceBundle;
 
 public class ProfileController implements Initializable {
-    @FXML CheckBox customDimensions;
-    @FXML CheckBox customDirectory;
-    @FXML CheckBox customJava;
-    @FXML CheckBox customJvmArgs;
-    @FXML CheckBox customLaunch;
+    @FXML CheckBox useCustomResolution;
+    @FXML CheckBox useCustomDirectory;
+    @FXML CheckBox useCustomJava;
+    @FXML CheckBox useCustomArgs;
+    @FXML CheckBox useCustomVisibility;
     @FXML CheckBox enableAlpha;
     @FXML CheckBox enableBeta;
     @FXML CheckBox enableSnapshots;
     @FXML ComboBox<JsonObject> gameVersion;
-    @FXML ComboBox<String> launchBehavior;
-    @FXML TextField args;
+    @FXML ComboBox<Integer> launchBehavior;
+    @FXML TextField javaArguments;
     @FXML TextField directory;
-    @FXML TextField hres;
-    @FXML TextField jvm;
+    @FXML TextField gameWidth;
+    @FXML TextField javaExecutable;
     @FXML TextField name;
-    @FXML TextField vres;
+    @FXML TextField hameHeight;
+    @FXML AnchorPane rootPane;
 
-    private JsonObject latestRelease = new JsonObject();
-    private JsonObject latestSnapshot = new JsonObject();
-
-    private UUID uuid;
-
-    public void setUuid(UUID uuid) {
-        this.uuid = uuid;
-    }
+    private Profile profile;
+    private Profile oldProfile;
 
     public void loadProfile(Profile profile) {
-        launchBehavior.getSelectionModel().select(profile.visibilitySetting());
-        hres.setText(String.valueOf(profile.width().orElse(854)));
-        vres.setText(String.valueOf(profile.height().orElse(480)));
-        jvm.setText(profile.customJavaPath());
-        args.setText(profile.customJvmArgs());
-        name.setText(profile.name());
-        directory.setText(profile.directory().toString());
-        JsonObject o = new JsonObject();
-        o.addProperty("id", profile.version());
-        gameVersion.getSelectionModel().select(o);
-        updateVersions();
+        this.profile = profile;
+        oldProfile = new Profile(profile);
+        name.textProperty().bindBidirectional(this.profile.name);
+        directory.textProperty().bindBidirectional(this.profile.directory);
+        gameWidth.textProperty().bindBidirectional(this.profile.resolution.get().h);
+        hameHeight.textProperty().bindBidirectional(this.profile.resolution.get().v);
+        launchBehavior.getSelectionModel().select(this.profile.visibility.get());
+        enableSnapshots.selectedProperty().bindBidirectional(this.profile.snapshotEnabled);
+        enableBeta.selectedProperty().bindBidirectional(this.profile.betaEnabled);
+        enableAlpha.selectedProperty().bindBidirectional(this.profile.alphaEnabled);
+        javaExecutable.textProperty().bindBidirectional(this.profile.javaExecutable);
+        javaArguments.textProperty().bindBidirectional(this.profile.javaArguments);
+        useCustomJava.selectedProperty().bindBidirectional(this.profile.useCustomJava);
+        useCustomResolution.selectedProperty().bindBidirectional(this.profile.useCustomResolution);
+        useCustomVisibility.selectedProperty().bindBidirectional(this.profile.useCustomVisibility);
+        useCustomDirectory.selectedProperty().bindBidirectional(this.profile.useCustomDirectory);
+        useCustomArgs.selectedProperty().bindBidirectional(this.profile.useCustomArgs);
+        refreshVersions();
+        for (JsonObject version : gameVersion.getItems()) {
+            if (Objects.equals(version.get("id").getAsString(), this.profile.gameVersion.getValue())) {
+                this.gameVersion.getSelectionModel().select(version);
+                break;
+            }
+        }
     }
+
+    @FXML
+    private void refreshVersions() {
+        this.gameVersion.setItems(new FilteredList<>(Minecraft.getVersions(), s -> switch (s.get("type").getAsString()) {
+            case "snapshot" -> this.profile.snapshotEnabled.get();
+            case "release" -> true;
+            case "old_beta" -> this.profile.betaEnabled.get();
+            case "old_alpha" -> this.profile.alphaEnabled.get();
+            default -> true;
+        }));
+    }
+
+    private static final Callback<ListView<JsonObject>, ListCell<JsonObject>> cellFactory = new Callback<>() {
+        @Override
+        public ListCell<JsonObject> call(ListView<JsonObject> param) {
+            return new ListCell<>() {
+                {
+                    setContentDisplay(ContentDisplay.TEXT_ONLY);
+                }
+
+                @Override
+                protected void updateItem(JsonObject item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (item == null || empty)
+                        setText("");
+                    else {
+                        if (Objects.equals(item.get("id").getAsString(), "latest"))
+                            setText("Use Latest Version");
+                        else
+                            setText(item.get("id").getAsString());
+                    }
+                }
+            };
+        }
+    };
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         launchBehavior.getSelectionModel().selectFirst();
-        hres.disableProperty().bind(customDimensions.selectedProperty().not());
-        vres.disableProperty().bind(customDimensions.selectedProperty().not());
-        directory.disableProperty().bind(customDirectory.selectedProperty().not());
-        launchBehavior.disableProperty().bind(customLaunch.selectedProperty().not());
-        args.disableProperty().bind(customJvmArgs.selectedProperty().not());
-        jvm.disableProperty().bind(customJava.selectedProperty().not());
-
-        gameVersion.setButtonCell(new ListCell<>() {
-            private JsonObject it;
-            {
-                setContentDisplay(ContentDisplay.TEXT_ONLY);
-            }
-            @Override
-            protected void updateItem(JsonObject item, boolean empty) {
-                super.updateItem(item, empty);
-                it = item;
-                if (item == null || empty)
-                    setText("err");
-                else {
-                    if (it.get("id").getAsString() == "latest")
-                        setText("Use Latest Version");
-                    else
-                        setText(it.get("id").getAsString());
-                }
-            }
-        });
-        gameVersion.setCellFactory(param -> new ListCell<>() {
-            private JsonObject it;
-            {
-                setContentDisplay(ContentDisplay.TEXT_ONLY);
-            }
-            @Override
-            protected void updateItem(JsonObject item, boolean empty) {
-                super.updateItem(item, empty);
-                it = item;
-                if (item == null || empty)
-                    setText("err");
-                else {
-                    if (it.get("id").getAsString() == "latest")
-                        setText("Use Latest Version");
-                    else
-                        setText(it.get("id").getAsString());
-                }
-            }
-        });
-
-        JsonObject manifest = null;
-        try {
-            manifest = Minecraft.getVersionManifest();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        versions = manifest.getAsJsonArray("versions");
+        gameWidth.disableProperty().bind(useCustomResolution.selectedProperty().not());
+        hameHeight.disableProperty().bind(useCustomResolution.selectedProperty().not());
+        directory.disableProperty().bind(useCustomDirectory.selectedProperty().not());
+        launchBehavior.disableProperty().bind(useCustomVisibility.selectedProperty().not());
+        javaArguments.disableProperty().bind(useCustomArgs.selectedProperty().not());
+        javaExecutable.disableProperty().bind(useCustomJava.selectedProperty().not());
+        gameVersion.setButtonCell(cellFactory.call(null));
+        gameVersion.setCellFactory(cellFactory);
+        Platform.runLater(() -> rootPane.getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, this::cancelEdits));
     }
 
-    private JsonArray versions;
-
-    public void updateVersions() {
-        gameVersion.getItems().clear();
-        JsonObject l = new JsonObject();
-        l.addProperty("id", "latest");
-        gameVersion.getItems().add(l);
-        for (JsonElement e : versions) {
-            JsonObject object = e.getAsJsonObject();
-            boolean yes = switch (object.get("type").getAsString()) {
-                case "snapshot" -> enableSnapshots.isSelected();
-                case "release" -> true;
-                case "old_beta" -> enableBeta.isSelected();
-                case "old_alpha" -> enableAlpha.isSelected();
-                default -> false;
-            };
-            if (yes)
-                gameVersion.getItems().add(object);
-        }
+    private void cancelEdits(Event event) {
+        this.profile.loadOldData(this.oldProfile);
     }
 
     @FXML void cancel(MouseEvent mouseEvent) {
-        Stage stage = (Stage) ((Button)mouseEvent.getSource()).getScene().getWindow();
-        stage.close();
+        this.cancelEdits(mouseEvent);
+        ((Stage)((Button)mouseEvent.getSource()).getScene().getWindow()).close();
     }
 
-    @FXML void openDir(MouseEvent mouseEvent) throws IOException {
+    @FXML void openDir() throws IOException {
         File dir = new File(directory.getText());
         if (!dir.exists())
             Platform.runLater(() -> {
@@ -161,22 +143,14 @@ public class ProfileController implements Initializable {
     }
 
     @FXML void save(MouseEvent mouseEvent) throws IOException {
-        Profile profile = new Profile(
-                name.getText(),
-                Path.of(directory.getText()),
-                hres.getText().isEmpty() ? OptionalInt.empty() : OptionalInt.of(Integer.parseInt(hres.getText())),
-                vres.getText().isEmpty() ? OptionalInt.empty() : OptionalInt.of(Integer.parseInt(vres.getText())),
-                launchBehavior.getSelectionModel().getSelectedIndex(),
-                new boolean[]{enableSnapshots.isSelected(), enableBeta.isSelected(), enableAlpha.isSelected()},
-                gameVersion.getSelectionModel().getSelectedItem().get("id").getAsString(),
-                jvm.getText().isEmpty() ? null : jvm.getText(),
-                args.getText().isEmpty() ? null : jvm.getText()
-        );
-        File profilesFile = FileUtils.getFile(profilesDir, "profiles.json");
-        File profileDir = FileUtils.getFile(profilesDir, uuid.toString());
-        File profileConfig = FileUtils.getFile(profileDir, "profile.json");
-        profileDir.mkdir();
-        profileConfig.delete();
-        FileUtils.writeStringToFile(profileConfig, profile.toJson().toString(), StandardCharsets.UTF_8);
+        if (gameVersion.getSelectionModel().isEmpty()) {
+            this.profile.snapshotEnabled.setValue(oldProfile.snapshotEnabled.getValue());
+            this.profile.betaEnabled.setValue(oldProfile.betaEnabled.getValue());
+            this.profile.alphaEnabled.setValue(oldProfile.alphaEnabled.getValue());
+            this.profile.gameVersion.setValue(oldProfile.gameVersion.getValue());
+        }
+        this.profile.gameVersion.setValue(this.gameVersion.getValue().get("id").getAsString());
+        App.profileManager.saveProfiles();
+        ((Stage)((Button)mouseEvent.getSource()).getScene().getWindow()).close();
     }
 }

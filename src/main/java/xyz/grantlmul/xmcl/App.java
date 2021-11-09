@@ -1,4 +1,4 @@
-package xyz.grantlmul.xbfl;
+package xyz.grantlmul.xmcl;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -9,7 +9,7 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import org.apache.commons.io.FileUtils;
-import xyz.grantlmul.xbfl.web.Minecraft;
+import xyz.grantlmul.xmcl.web.Minecraft;
 
 import java.io.File;
 import java.io.IOException;
@@ -101,7 +101,7 @@ public class App extends Application {
 
     public static Thread thread;
     public static JsonObject authConf;
-    public static ProfileManager profileManager;
+    public static OldProfileManager profileManager;
     public static void main(String[] args) throws IOException {
         thread = Thread.currentThread();
         authConf = JsonParser.parseString(
@@ -116,7 +116,7 @@ public class App extends Application {
         bob.append("&scope=XboxLive.signin%20offline_access");
         OAUTH_URL = new URL(bob.toString());
         Minecraft.refreshVersionManifest();
-        profileManager = new ProfileManager();
+        profileManager = new OldProfileManager();
         launch(args);
     }
 }

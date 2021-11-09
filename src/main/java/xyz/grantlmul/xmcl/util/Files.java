@@ -1,4 +1,4 @@
-package xyz.grantlmul.xbfl.util;
+package xyz.grantlmul.xmcl.util;
 
 public class Files {
     public static String sanitizePath(String input) {

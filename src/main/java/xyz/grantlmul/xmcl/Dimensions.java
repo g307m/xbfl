@@ -1,4 +1,4 @@
-package xyz.grantlmul.xbfl;
+package xyz.grantlmul.xmcl;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;

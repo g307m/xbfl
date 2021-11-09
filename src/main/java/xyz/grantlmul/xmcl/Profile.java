@@ -1,4 +1,4 @@
-package xyz.grantlmul.xbfl;
+package xyz.grantlmul.xmcl;
 
 import com.google.gson.JsonObject;
 import javafx.beans.InvalidationListener;
@@ -7,7 +7,6 @@ import javafx.beans.property.*;
 import javafx.collections.transformation.FilteredList;
 import javafx.scene.control.SingleSelectionModel;
 import org.apache.commons.io.FileUtils;
-import xyz.grantlmul.xbfl.web.Minecraft;
 
 import java.util.UUID;
 

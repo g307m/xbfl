@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Rectangle?>
-<AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="541" prefWidth="884" styleClass="root" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xyz.grantlmul.xbfl.LoginController" fx:id="root">
+<AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="541" prefWidth="884" styleClass="root" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xyz.grantlmul.xmcl.LoginController" fx:id="root">
     <children>
         <Rectangle fx:id="rectangle" styleClass="overgrad" width="${root.width}" height="${root.height}">
             <effect><BoxBlur /></effect>

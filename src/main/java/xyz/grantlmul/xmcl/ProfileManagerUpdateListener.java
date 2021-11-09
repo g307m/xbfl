@@ -1,4 +1,4 @@
-package xyz.grantlmul.xbfl;
+package xyz.grantlmul.xmcl;
 
 /**
  * @implNote all methods have a default so anonymous impls are like ok and also not fucking massive

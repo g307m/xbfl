@@ -1,4 +1,4 @@
-package xyz.grantlmul.xbfl;
+package xyz.grantlmul.xmcl;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
@@ -18,10 +18,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.UUID;
 
-public class ProfileManager implements Observable {
+public class OldProfileManager implements Observable {
     private final LinkedList<Profile> profiles = new LinkedList<>();
 
-    public ProfileManager() throws IOException {
+    public OldProfileManager() throws IOException {
         if (!FileUtils.getFile(App.dataDir(), "profiles").isDirectory()) {
             Profile defaultProfile = new Profile();
             defaultProfile.uuid.setValue(UUID.randomUUID());

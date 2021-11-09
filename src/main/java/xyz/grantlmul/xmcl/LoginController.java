@@ -1,21 +1,9 @@
-package xyz.grantlmul.xbfl;
+package xyz.grantlmul.xmcl;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import javafx.application.Platform;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
-import javafx.scene.input.MouseEvent;
-import javafx.stage.Window;
-import javafx.stage.WindowEvent;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
@@ -30,7 +18,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
-import xyz.grantlmul.xbfl.web.Minecraft;
+import xyz.grantlmul.xmcl.web.Minecraft;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.awt.*;
@@ -39,25 +27,10 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class LoginController {
-
-    @FXML TextField usernameField;
-    @FXML PasswordField passwordField;
-    @FXML Button msButton;
-
-    public void initialize(Window window) {
-        window.addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, this::exitApplication);
-    }
-
-    public void handleRegisterClick(MouseEvent mouseEvent) {
-
-    }
-
-    public void handleLoginClick(MouseEvent mouseEvent) {
-    }
-
+    TextField usernameField;
+    Button msButton;
     private class ServerRunnable implements Runnable {
         Server server;
         @Override

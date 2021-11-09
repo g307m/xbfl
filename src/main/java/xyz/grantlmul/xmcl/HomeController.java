@@ -1,8 +1,5 @@
-package xyz.grantlmul.xbfl;
+package xyz.grantlmul.xmcl;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
@@ -21,18 +18,14 @@ import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-import org.apache.commons.io.FileUtils;
-import xyz.grantlmul.xbfl.web.Minecraft;
+import xyz.grantlmul.xmcl.web.Minecraft;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.OptionalInt;
 import java.util.ResourceBundle;
-import java.util.UUID;
 
 public class HomeController implements Initializable {
     @FXML Button playButton;

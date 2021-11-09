@@ -1,4 +1,4 @@
-package xyz.grantlmul.xbfl;
+package xyz.grantlmul.xmcl;
 
 import com.google.gson.JsonObject;
 import javafx.application.Platform;
@@ -14,7 +14,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
-import xyz.grantlmul.xbfl.web.Minecraft;
+import xyz.grantlmul.xmcl.web.Minecraft;
 
 import java.awt.*;
 import java.io.File;

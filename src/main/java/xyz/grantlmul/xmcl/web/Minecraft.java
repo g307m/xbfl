@@ -1,4 +1,4 @@
-package xyz.grantlmul.xbfl.web;
+package xyz.grantlmul.xmcl.web;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -13,13 +13,12 @@ import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
-import xyz.grantlmul.xbfl.App;
+import xyz.grantlmul.xmcl.App;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.net.http.HttpClient;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 

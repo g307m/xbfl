@@ -1,4 +1,4 @@
-package xyz.grantlmul.xbfl;
+package xyz.grantlmul.xmcl;
 
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.ObjectProperty;
